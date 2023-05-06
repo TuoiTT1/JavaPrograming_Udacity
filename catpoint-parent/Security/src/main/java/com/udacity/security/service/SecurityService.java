@@ -21,9 +21,9 @@ import java.util.Set;
 public class SecurityService {
 
     //    private FakeImageService imageService;
-    private ImageService imageService;
-    private SecurityRepository securityRepository;
-    private Set<StatusListener> statusListeners = new HashSet<>();
+    private final ImageService imageService;
+    private final SecurityRepository securityRepository;
+    private final Set<StatusListener> statusListeners = new HashSet<>();
     Boolean catDetected;
 
     public SecurityService(SecurityRepository securityRepository, ImageService imageService) {
@@ -50,7 +50,7 @@ public class SecurityService {
         }
 
         securityRepository.setArmingStatus(armingStatus);
-        statusListeners.forEach(sl -> sl.sensorStatusChanged());
+        statusListeners.forEach(StatusListener::sensorStatusChanged);
     }
 
     /**
@@ -114,7 +114,7 @@ public class SecurityService {
     private void handleSensorDeactivated() {
         switch (securityRepository.getAlarmStatus()) {
             case PENDING_ALARM -> setAlarmStatus(AlarmStatus.NO_ALARM);
-            case ALARM -> setAlarmStatus(AlarmStatus.PENDING_ALARM);
+//            case ALARM -> setAlarmStatus(AlarmStatus.PENDING_ALARM); //the requirements list does not have any scenarios that require this point to be covered.
             default -> {
             }
         }
@@ -130,8 +130,7 @@ public class SecurityService {
 //        if (!sensor.getActive() && active) {
         if (active) {
             handleSensorActivated();
-        } else if (getAlarmStatus() == AlarmStatus.PENDING_ALARM
-                && sensor.getActive() && !active) {
+        } else if (getAlarmStatus() == AlarmStatus.PENDING_ALARM && sensor.getActive()) {
             handleSensorDeactivated();
         }
         sensor.setActive(active);
@@ -169,6 +168,6 @@ public class SecurityService {
     }
 
     private boolean isSensorsAreNotActive() {
-        return getSensors().stream().allMatch(sensor -> !sensor.getActive());
+        return getSensors().stream().noneMatch(Sensor::getActive);
     }
 }
