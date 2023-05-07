@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
@@ -119,7 +118,7 @@ public class SecurityServiceTest {
 
     @ParameterizedTest
     @DisplayName("8. the image service identifies an image that does not contain a cat, change the status to no alarm as long as the sensors are not active.")
-    @CsvSource("1, 2, 3, 4")
+    @ValueSource(ints = {1, 2, 3, 4})
     public void imageNoContainACat_changeStatusToNoAlarm(int countSensor) {
         Set<Sensor> sensors = createSensors(countSensor, SensorType.DOOR, false);
         when(securityRepository.getSensors()).thenReturn(sensors);
